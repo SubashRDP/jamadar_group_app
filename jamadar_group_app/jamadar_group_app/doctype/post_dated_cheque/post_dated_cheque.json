@@ -11,11 +11,11 @@
   "naming_series",
   "payment_type",
   "status",
-  "memo",
   "column_break_5",
   "posting_date",
   "company",
   "mode_of_payment",
+  "memo",
   "party_section",
   "party_type",
   "party",
@@ -441,7 +441,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
- "modified": "2025-07-20 16:51:01.299410",
+ "modified": "2025-07-22 10:43:59.990242",
  "modified_by": "Administrator",
  "module": "Jamadar App",
  "name": "Post Dated Cheque",
