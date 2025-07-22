@@ -77,7 +77,7 @@ frappe.ui.form.on('Post Dated Cheque', {
     },
 
     party: function(frm) {
-        // Fetch party details when party is selected
+    // Fetch party details when party is selected
         if (frm.doc.party && frm.doc.party_type) {
             frappe.call({
                 method: 'frappe.client.get',
@@ -92,39 +92,21 @@ frappe.ui.form.on('Post Dated Cheque', {
                         // Set party_name
                         frm.set_value('party_name', party.customer_name || party.supplier_name || '');
 
-                        // Fetch party balance
-                        frappe.call({
-                            method: 'erpnext.accounts.utils.get_balance_on',
-                            args: {
-                                party_type: frm.doc.party_type,
-                                party: frm.doc.party,
-                                date: frm.doc.posting_date || frappe.datetime.get_today(),
-                                company: frm.doc.company
-                            },
-                            callback: function(balance_r) {
-                                if (balance_r.message) {
-                                    frm.set_value('party_balance', balance_r.message);
-                                }
-                            }
-                        });
+                        // Set party_pan (PAN from Customer or Supplier)
+                        frm.set_value('party_pan', party.tax_id || '');
 
-                        // // Fetch party bank account
+                        // // Fetch party balance
                         // frappe.call({
-                        //     method: 'frappe.client.get_value',
+                        //     method: 'erpnext.accounts.utils.get_balance_on',
                         //     args: {
-                        //         doctype: 'Bank Account',
-                        //         filters: {
-                        //             party_type: frm.doc.party_type,
-                        //             party: frm.doc.party,
-                        //             is_default: 1
-                        //         },
-                        //         fieldname: ['name']
+                        //         party_type: frm.doc.party_type,
+                        //         party: frm.doc.party,
+                        //         date: frm.doc.posting_date || frappe.datetime.get_today(),
+                        //         company: frm.doc.company
                         //     },
-                        //     callback: function(bank_r) {
-                        //         if (bank_r.message && bank_r.message.name) {
-                        //             frm.set_value('party_bank_account', bank_r.message.name);
-                        //         } else {
-                        //             frm.set_value('party_bank_account', '');
+                        //     callback: function(balance_r) {
+                        //         if (balance_r.message) {
+                        //             frm.set_value('party_balance', balance_r.message);
                         //         }
                         //     }
                         // });
@@ -155,7 +137,7 @@ frappe.ui.form.on('Post Dated Cheque', {
         } else {
             // Clear fields if no party is selected
             frm.set_value('party_name', '');
-            //frm.set_value('party_balance', 0);
+            frm.set_value('party_pan', '');
             frm.set_value('bank_account', '');
             frm.set_value('party_bank_account', '');
         }
