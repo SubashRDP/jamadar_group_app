@@ -36,6 +36,12 @@ frappe.ui.form.on('Post Dated Cheque', {
             frm.toggle_display('base_paid_amount', true); // Show base_paid_amount
             frm.toggle_reqd('paid_amount', true); // Ensure mandatory
         }
+
+        // if (frm.doc.party_type === 'Customer') {
+        //     frm.toggle_reqd('party_pan', true);
+        // } else {
+        //     frm.toggle_reqd('party_pan', false);
+        // }
     },
 
     payment_type: function(frm) {
@@ -69,7 +75,6 @@ frappe.ui.form.on('Post Dated Cheque', {
         // Clear party and related fields when payment_type changes
         frm.set_value('party', '');
         frm.set_value('party_name', '');
-        //frm.set_value('party_balance', 0);
         frm.set_value('bank_account', '');
         frm.set_value('party_bank_account', '');
         frm.set_value('base_paid_amount', 0); // Reset mandatory field
@@ -94,22 +99,6 @@ frappe.ui.form.on('Post Dated Cheque', {
 
                         // Set party_pan (PAN from Customer or Supplier)
                         frm.set_value('party_pan', party.tax_id || '');
-
-                        // // Fetch party balance
-                        // frappe.call({
-                        //     method: 'erpnext.accounts.utils.get_balance_on',
-                        //     args: {
-                        //         party_type: frm.doc.party_type,
-                        //         party: frm.doc.party,
-                        //         date: frm.doc.posting_date || frappe.datetime.get_today(),
-                        //         company: frm.doc.company
-                        //     },
-                        //     callback: function(balance_r) {
-                        //         if (balance_r.message) {
-                        //             frm.set_value('party_balance', balance_r.message);
-                        //         }
-                        //     }
-                        // });
 
                         // Fetch company bank account
                         frappe.call({
@@ -144,18 +133,19 @@ frappe.ui.form.on('Post Dated Cheque', {
     },
 
     paid_amount: function(frm) {
-        // Update base_paid_amount (Company Currency) based on source_exchange_rate
-        if (frm.doc.paid_amount && frm.doc.source_exchange_rate) {
-            frm.set_value('base_paid_amount', frm.doc.paid_amount * frm.doc.source_exchange_rate);
-        } else if (frm.doc.payment_type === 'Pay') {
-            frm.set_value('base_paid_amount', 0); // Ensure mandatory field is set
-        }
-    },
+        debugger;
+    if (frm.doc.payment_type === 'Receive') {
+        frm.set_value('base_paid_amount', frm.doc.paid_amount );
+    } else if (frm.doc.payment_type === 'Pay') {
+        frm.set_value('base_paid_amount', 0); // Ensure mandatory field is set
+    }
+},
 
     received_amount: function(frm) {
         // Update base_received_amount (Company Currency) based on target_exchange_rate
-        if (frm.doc.received_amount && frm.doc.target_exchange_rate) {
-            frm.set_value('base_received_amount', frm.doc.received_amount * frm.doc.target_exchange_rate);
+        // if (frm.doc.received_amount && frm.doc.target_exchange_rate) {
+         if (frm.doc.payment_type === 'Pay') {
+            frm.set_value('base_received_amount', frm.doc.received_amount);
         } else if (frm.doc.payment_type === 'Receive') {
             frm.set_value('base_received_amount', 0); // Ensure mandatory field is set
         }
